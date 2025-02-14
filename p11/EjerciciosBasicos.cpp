@@ -86,7 +86,7 @@ real mn_factorial(int n){
 /// P11.8 FUNCIÓN QUE CALCULA UNA POTENCIA CON UN NÚMERO NATURAL
 /// NO SE PUEDE USAR LA FUNCIÓN pow()
 real mn_potencia(real x,int n){
-    real result = 1;
+    real result = 1.;
     for (int i = 0; i < n; i++) result *= x;
     return result;
 }
@@ -173,14 +173,31 @@ real mn_pow(real y,real x,int n){
 /// ES DECIR, POR EJEMPLO  1. (EN LUGAR DE 1). SI HACEMOS 1/2 EL RESULTADO ES CERO PORQUE HACE
 /// LA DIVISIÓN EN PRECISIÓN ENTERA. SIN EMBARGO  1./2.=1./2=1/2.=0.5
 real mn_limite1(real tolerancia){
- /// HACER ALUMNO
+ real n = 2;
+ real current = 2.;
+ real previous = 1.;
+
+ while(fabs(current - previous) >= tolerancia){
+    previous = current;
+    current = mn_potencia(1. + 1./n, n);
+    n++;
+ }
+ return current;
 }
 
 /// P11.14 FUNCIÓN QUE CALCULA EL LIMITE DE LA FUNCIÓN f(x)=sin(x)/x CUANDO x TIENDE HACIA 0.
 /// EL PARAMETRO tolerancia SE UTILIZA PARA PARAR EL ALGORITMO CUANDO ESTAMOS CERCA DEL LÍMITE
 /// EL VALOR DEL LÍMITE ES 1.
 real mn_limite2(real tolerancia){
-  /// HACER ALUMNO
+  real limit = 1.;
+  real previous = 0.;
+  real n = 1;
+  while (fabs(limit - previous) >= tolerancia) {
+    previous = limit;
+    limit = sin(1./n) / (1./n);
+    n++;
+  }
+  return limit;
 }
 
 /// P11.15 FUNCIÓN QUE CALCULA EL LIMITE DE LA SECUENCIA  yn=X(n+1)/X(n) DONDE X(n) ES LA
@@ -189,7 +206,20 @@ real mn_limite2(real tolerancia){
 /// ENTRE UN VALOR DE LA SECUENCIA yn Y EL ANTERIOR ES INFERIOR AL PARAMETRO tolerancia
 /// EL LIMITE DE LA SECUENCIA yn ES EL NÚMERO AÚREO IGUAL A (1+SQRT(5))/2 = 1.618033988....
 real mn_limite3(real tolerancia){
-  /// HACER ALUMNO
+  real current_fibonacci = 2.;
+  real previous_fibonacci = 1.;
+  real current_ratio = 2.;
+  real previous_ratio = 1.;
+
+  while (fabs(current_ratio - previous_ratio) >= tolerancia) {
+    real temporal = current_fibonacci;
+    current_fibonacci = current_fibonacci + previous_fibonacci;
+    previous_fibonacci = temporal;
+    previous_ratio = current_ratio;
+    current_ratio = current_fibonacci / previous_fibonacci;
+  }
+
+  return current_ratio;
 }
 
 /// P11.16 CÁLCULO DEL NÚMERO PI POR EL MÉTODO DE MONTECARLO. EL ÁREA DEL CÍRCULO DE RADIO
@@ -198,6 +228,23 @@ real mn_limite3(real tolerancia){
 /// EL CÍRCULO ES PI/4. EL MÉTODO DE MONTECARLO APROXIMA PI COGIENDO PUNTOS AL AZAR EN
 /// EL CUADRADO [-1,1]x[-1,1] Y VIENDO QUE PROPORCIÓN CAE EN EL CÍRCULO.
 /// NOTA : LA FUNCIÓN rand() DEVUELVE UN VALOR ENTERO ALEATORIO ENTRE 0 Y RAND_MAX
+bool is_inside_circle(real x, real y){
+    return x*x + y*y <= 1.;
+}
+
+real rand_number() {
+    real sign = 1.;
+    if (rand()*1. / RAND_MAX <= 0.5) sign *= -1.;
+    return sign*rand()*1. / RAND_MAX;
+}
+
 real calculo_pi_montecarlo(int Nintentos){
-  /// HACER ALUMNO
+    if (Nintentos == 0) return 0.;
+    real inside = 0.;
+
+    for (int i = 0; i < Nintentos; i++){
+        if (is_inside_circle(rand_number(), rand_number())) inside++;
+    }
+
+    return 4. * inside / Nintentos;
 }
